@@ -32,6 +32,8 @@ public class EmployeeController {
     @PostMapping("/login")
     public R<Employee> login(HttpServletRequest request, @RequestBody Employee employee) {
 
+        log.info("员工登录");
+
         // 密码加密(MD5)
         String password = employee.getPassword();
         password = DigestUtils.md5DigestAsHex(password.getBytes());
@@ -58,6 +60,7 @@ public class EmployeeController {
 
         // 登录成功
         request.getSession().setAttribute("employee", emp);
+        log.info("登录成功：{}", emp.toString());
 
         // 返回
         return R.success(emp);
@@ -72,7 +75,13 @@ public class EmployeeController {
      */
     @PostMapping("/logout")
     public R<String> logout(HttpServletRequest request) {
+
+        log.info("员工退出");
+
+        // 清除session
         request.getSession().removeAttribute("employee");
+
+        // 返回
         return R.success("退出成功");
     }
 
@@ -92,14 +101,6 @@ public class EmployeeController {
         // 密码加密(MD5)
         employee.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
 
-        // 设置创建时间和更新时间
-        employee.setCreateTime(LocalDateTime.now());
-        employee.setUpdateTime(LocalDateTime.now());
-
-        // 设置创建人和更新人
-        employee.setCreateUser(((Employee) request.getSession().getAttribute("employee")).getId());
-        employee.setUpdateUser(((Employee) request.getSession().getAttribute("employee")).getId());
-
         // 保存
         employeeService.save(employee);
 
@@ -117,6 +118,8 @@ public class EmployeeController {
      */
     @GetMapping("/page")
     public R<Page<Employee>> page(int page, int pageSize,String name) {
+
+        log.info("员工信息分页查询：page={},pageSize={},name={}", page, pageSize,name);
 
         // 构造分页构造器
         Page<Employee> employeePage = new Page<>(page, pageSize);

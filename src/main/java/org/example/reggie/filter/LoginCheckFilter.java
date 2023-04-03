@@ -2,6 +2,7 @@ package org.example.reggie.filter;
 
 import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
+import org.example.reggie.common.BaseContext;
 import org.example.reggie.common.R;
 import org.example.reggie.entity.Employee;
 
@@ -63,6 +64,14 @@ public class LoginCheckFilter implements Filter {
         // 已登录
         log.info("已登录，放行");
         log.info("目前登录账号: {}", JSON.toJSONString(employee.getUsername()));
+
+        log.info("线程名: {}", Thread.currentThread().getName());
+        log.info("线程ID: {}", Thread.currentThread().getId());
+
+        // 将当前登录账号存入ThreadLocal
+        BaseContext.setCurrentId(String.valueOf(employee.getId()));
+
+
         filterChain.doFilter(request, response);
     }
 }
