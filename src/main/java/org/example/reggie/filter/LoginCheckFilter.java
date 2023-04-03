@@ -35,7 +35,7 @@ public class LoginCheckFilter implements Filter {
         }
 
         // 判断是否是静态资源
-        if (requestURI.contains("/static") || requestURI.contains(".html")) {
+        if (requestURI.contains("/backend/") || requestURI.contains(".html")) {
             // 放行
             log.info("静态资源，放行");
             filterChain.doFilter(request, response);

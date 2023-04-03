@@ -125,7 +125,7 @@ public class EmployeeController {
         LambdaQueryWrapper<Employee> employeeLambdaQueryWrapper = new LambdaQueryWrapper<>();
 
         // 添加过滤条件
-        employeeLambdaQueryWrapper.like(StringUtils.isEmpty(name),Employee::getName, name);
+        employeeLambdaQueryWrapper.like(StringUtils.isNotEmpty(name),Employee::getName, name);
 
         // 添加排序条件
         employeeLambdaQueryWrapper.orderByDesc(Employee::getUpdateTime);
@@ -135,5 +135,52 @@ public class EmployeeController {
 
         // 返回
         return R.success(employeePage);
+    }
+
+    /**
+     * 修改员工
+     *
+     * @param request  request
+     * @param employee 员工
+     * @return 员工
+     */
+    @PutMapping
+    public R<String> update(HttpServletRequest request, @RequestBody Employee employee) {
+
+        log.info("修改员工：{}", employee.toString());
+
+        // 设置更新时间
+        employee.setUpdateTime(LocalDateTime.now());
+
+        // 设置更新人
+        employee.setUpdateUser(((Employee) request.getSession().getAttribute("employee")).getId());
+
+        // 保存
+        employeeService.updateById(employee);
+
+        // 返回
+        return R.success("修改员工成功");
+    }
+
+
+    /**
+     * 查询员工
+     * @param id 员工id
+     * @return 员工
+     */
+    @GetMapping("/{id}")
+    public R<Employee> getById(@PathVariable Long id) {
+
+        log.info("查询员工：{}", id);
+
+        // 查询
+        Employee employee = employeeService.getById(id);
+
+        // 返回
+        if (employee != null) {
+            return R.success(employee);
+        } else {
+            return R.error("没有该员工");
+        }
     }
 }
