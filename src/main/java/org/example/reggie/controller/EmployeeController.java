@@ -91,7 +91,7 @@ public class EmployeeController {
      *
      * @param request  request
      * @param employee 员工
-     * @return 员工
+     * @return 成功信息
      */
     @PostMapping
     public R<String> save(HttpServletRequest request, @RequestBody Employee employee) {
@@ -114,7 +114,7 @@ public class EmployeeController {
      * @param page 页码
      * @param pageSize 每页显示数量
      * @param name 员工姓名
-     * @return 员工信息分页
+     * @return 员工信息列表
      */
     @GetMapping("/page")
     public R<Page<Employee>> page(int page, int pageSize,String name) {
@@ -137,6 +137,7 @@ public class EmployeeController {
         employeeService.page(employeePage, employeeLambdaQueryWrapper);
 
         // 返回
+        log.info("员工信息分页查询成功");
         return R.success(employeePage);
     }
 
@@ -145,7 +146,7 @@ public class EmployeeController {
      *
      * @param request  request
      * @param employee 员工
-     * @return 员工
+     * @return 成功信息
      */
     @PutMapping
     public R<String> update(HttpServletRequest request, @RequestBody Employee employee) {
