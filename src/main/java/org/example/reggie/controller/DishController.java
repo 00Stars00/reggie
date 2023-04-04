@@ -97,8 +97,13 @@ public class DishController {
             Long categoryId = (Long) item.getCategoryId();
 
             Category category = categoryService.getById(categoryId);
-            String categoryName = category.getName();
-            dishDto.setCategoryName(categoryName);
+
+            if (category != null) {
+
+                String categoryName = category.getName();
+                dishDto.setCategoryName(categoryName);
+
+            }
 
             return dishDto;
 
