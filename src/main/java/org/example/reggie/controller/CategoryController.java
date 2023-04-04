@@ -7,10 +7,7 @@ import org.example.reggie.common.R;
 import org.example.reggie.entity.Category;
 import org.example.reggie.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -43,16 +40,16 @@ public class CategoryController {
     /**
      * 分类信息分页查询
      * @param page 页码
-     * @param size 每页大小
+     * @param pageSize 每页大小
      * @return 分类信息列表
      */
-    @PostMapping("/page")
-    public R<Page<Category>> page(int page, int size) {
+    @GetMapping("/page")
+    public R<Page<Category>> page(int page, int pageSize) {
 
         log.info("分类信息分页查询");
 
         // 分页构造器
-        Page<Category> categoryPage = new Page<>(page, size);
+        Page<Category> categoryPage = new Page<>(page, pageSize);
 
         // 条件构造器
         LambdaQueryWrapper<Category> categoryLambdaQueryWrapper = new LambdaQueryWrapper<>();
@@ -67,6 +64,25 @@ public class CategoryController {
         log.info("分类信息分页查询成功");
         return R.success(categoryPage);
 
+    }
+
+
+    /**
+     * 根据id删除分类
+     * @param ids 分类id
+     * @return 成功信息
+     */
+    @DeleteMapping
+    public R<String> delete(Long ids) {
+
+        log.info("删除分类");
+
+        // 删除
+        categoryService.remove(ids);
+
+        // 返回
+        log.info("删除分类成功");
+        return R.success("删除成功");
     }
 
 }

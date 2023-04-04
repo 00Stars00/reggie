@@ -35,4 +35,20 @@ public class GlobalExceptionHandler {
         // 返回
         return R.error("未知异常");
     }
+
+
+    /**
+     * 处理CustomException异常
+     *
+     * @param e 异常
+     * @return 异常信息
+     */
+    @ExceptionHandler(CustomException.class)
+    public R<String> exceptionHandler(CustomException e) {
+        // 打印异常
+        log.error(e.getMessage());
+
+        // 返回
+        return R.error(e.getMessage());
+    }
 }
