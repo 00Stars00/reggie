@@ -37,7 +37,11 @@ public class DishController {
         log.info("添加菜品: {}", dishDto);
 
         // 添加菜品
-        return null;
+        dishService.saveWithFlavor(dishDto);
+
+        // 返回
+        log.info("添加菜品成功");
+        return R.success("添加菜品成功");
     }
 
 
