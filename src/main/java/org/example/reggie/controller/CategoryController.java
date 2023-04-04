@@ -9,6 +9,8 @@ import org.example.reggie.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequestMapping("/category")
@@ -102,6 +104,34 @@ public class CategoryController {
         // 返回
         log.info("修改分类成功");
         return R.success("修改成功");
+    }
+
+    /**
+     * 根据条件查询分类列表
+     * @param category 查询条件
+     * @return 分类列表
+     */
+    @GetMapping("/list")
+    public R<List<Category>> list(Category category) {
+
+            log.info("查询分类列表");
+
+            // 条件构造器
+            LambdaQueryWrapper<Category> categoryLambdaQueryWrapper = new LambdaQueryWrapper<>();
+
+            // 查询条件
+            categoryLambdaQueryWrapper.eq(category.getType() != null, Category::getType, category.getType());
+
+            // 排序
+            categoryLambdaQueryWrapper.orderByAsc(Category::getSort).orderByDesc(Category::getUpdateTime);
+
+            // 查询
+            List<Category> categoryList = categoryService.list(categoryLambdaQueryWrapper);
+
+            // 返回
+            log.info("查询分类列表成功");
+            return R.success(categoryList);
+
     }
 
 }
