@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.reggie.common.BaseContext;
 import org.example.reggie.common.R;
 import org.example.reggie.entity.Employee;
+import org.example.reggie.entity.User;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
@@ -28,50 +29,72 @@ public class LoginCheckFilter implements Filter {
         log.info("请求路径：{}", requestURI);
 
         // 判断是否是登录请求
-        if (requestURI.contains("/employee/login")) {
+        if (requestURI.contains("/employee/login") || requestURI.contains("/user/login")) {
             // 放行
             log.info("登录请求，放行");
             filterChain.doFilter(request, response);
             return;
         }
 
+        if (requestURI.contains("/user/sendMsg")) {
+            // 放行
+            log.info("发送验证码请求，放行");
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         // 判断是否是静态资源
-        if (requestURI.contains("/backend/") || requestURI.contains(".html")) {
+        if (requestURI.contains("/backend/") || requestURI.contains("/front/") || requestURI.contains(".html")) {
             // 放行
             log.info("静态资源，放行");
             filterChain.doFilter(request, response);
             return;
         }
 
-        // 判断是否是登录页面
-        if (requestURI.contains("/backend/page/login/login.html")) {
-            // 放行
-            log.info("登录页面，放行");
-            filterChain.doFilter(request, response);
-            return;
-        }
+
 
         // 判断是否登录
-        Employee employee = (Employee) request.getSession().getAttribute("employee");
-        if (employee == null) {
-            // 未登录
-            log.info("未登录，重定向到登录页面");
-            response.setContentType("application/json;charset=utf-8");
-            response.getWriter().write(JSON.toJSONString(R.error("NOTLOGIN")));
+        //后台管理
+        if (request.getSession().getAttribute("employee") != null) {
+
+            log.info("后台管理登录验证");
+
+            // 获取当前登录账号
+            Employee employee = (Employee) request.getSession().getAttribute("employee");
+
+            // 将当前登录账号存入ThreadLocal
+            log.info("当前登录账号为员工账号：{}", employee.getId());
+            BaseContext.setCurrentId(String.valueOf(employee.getId()));
+
+            // 放行
+            log.info("已登录，放行");
+            filterChain.doFilter(request, response);
+
             return;
         }
 
-        // 已登录
-        log.info("已登录，放行");
-        log.info("目前登录账号: {}", JSON.toJSONString(employee.getUsername()));
+        // 客户端
+        if (request.getSession().getAttribute("user") != null) {
 
-        log.info("线程名: {}", Thread.currentThread().getName());
-        log.info("线程ID: {}", Thread.currentThread().getId());
+            log.info("客户端登录验证");
 
-        // 将当前登录账号存入ThreadLocal
-        BaseContext.setCurrentId(String.valueOf(employee.getId()));
+            // 获取当前登录账号
+            User user = (User) request.getSession().getAttribute("user");
 
+            // 将当前登录账号存入ThreadLocal
+            log.info("当前登录账号为用户账号：{}", user.getId());
+            BaseContext.setCurrentId(String.valueOf(user.getId()));
 
-        filterChain.doFilter(request, response);
+            // 放行
+            log.info("已登录，放行");
+            filterChain.doFilter(request, response);
+
+            return;
+        }
+
+        // 未登录
+        log.info("未登录，重定向到登录页面");
+        response.setContentType("application/json;charset=utf-8");
+        response.getWriter().write(JSON.toJSONString(R.error("NOTLOGIN")));
     }
 }

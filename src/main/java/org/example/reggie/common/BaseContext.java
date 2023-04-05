@@ -17,7 +17,6 @@ public class BaseContext {
      * @param id id
      */
     public static void setCurrentId(String id) {
-        log.info("设置登录状态线程id: {}", Thread.currentThread().getId());
         context.set(id);
     }
 
@@ -28,7 +27,6 @@ public class BaseContext {
      * @return id
      */
     public static String getCurrentId() {
-        log.info("获取登录状态线程id: {}", Thread.currentThread().getId());
         return context.get();
     }
 }
