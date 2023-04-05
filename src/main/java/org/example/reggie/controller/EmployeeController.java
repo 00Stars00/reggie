@@ -156,12 +156,6 @@ public class EmployeeController {
 
         log.info("修改员工：{}", employee.toString());
 
-        // 设置更新时间
-        employee.setUpdateTime(LocalDateTime.now());
-
-        // 设置更新人
-        employee.setUpdateUser(((Employee) request.getSession().getAttribute("employee")).getId());
-
         // 保存
         employeeService.updateById(employee);
 

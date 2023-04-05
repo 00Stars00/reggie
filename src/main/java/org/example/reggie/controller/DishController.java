@@ -118,4 +118,89 @@ public class DishController {
     }
 
 
+    /**
+     * 根据id查询菜品信息和口味
+     *
+     * @param id    菜品id
+     * @return 成功信息
+     */
+    @GetMapping("/{id}")
+    public R<DishDto> get(@PathVariable Long id) {
+
+        log.info("查询菜品信息: id = {}", id);
+
+        // 查询菜品信息
+        DishDto dishDto = dishService.getByIdWithFlavor(id);
+
+        // 返回
+        log.info("查询菜品信息成功");
+        return R.success(dishDto);
+
+    }
+
+
+    /**
+     * 修改菜品信息
+     * @param dishDto 菜品信息
+     * @return 成功信息
+     */
+    @PutMapping
+    public R<String> update(@RequestBody DishDto dishDto) {
+
+        log.info("修改菜品信息: {}", dishDto);
+
+        // 修改菜品信息
+        dishService.updateWithFlavor(dishDto);
+
+        // 返回
+        log.info("修改菜品信息成功");
+        return R.success("修改菜品信息成功");
+
+    }
+
+
+    /**
+     * 根据id删除菜品信息和口味信息
+     * @param ids 菜品id
+     * @return 成功信息
+     */
+    @DeleteMapping
+    public R<String> delete(@RequestParam List<Long> ids) {
+            
+            log.info("删除菜品信息: id = {}", ids);
+    
+            // 删除菜品信息
+            //dishService.removeByIdWithFlavor(ids);
+    
+            // 返回
+            log.info("删除菜品信息成功");
+            return R.success("删除菜品信息成功");
+
+        
+
+    }
+
+
+
+    /**
+     * 修改菜品状态
+     * @param status 状态
+     * @param ids 菜品id
+     * @return 成功信息
+     */
+    @PostMapping("/status/{status}")
+    public R<String> status(@PathVariable("status") Integer status,  @RequestParam List<Long> ids) {
+
+            log.info("修改菜品状态: status = {}, ids = {}", status, ids);
+
+            // 修改菜品状态
+            dishService.updateStatus(status, ids);
+
+            // 返回
+            log.info("修改菜品状态成功");
+            return R.success("修改菜品状态成功");
+
+    }
+
+
 }
