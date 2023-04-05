@@ -1,16 +1,22 @@
 package org.example.reggie.controller;
 
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 import org.example.reggie.common.R;
 import org.example.reggie.dto.SetmealDto;
+import org.example.reggie.entity.Category;
+import org.example.reggie.entity.Setmeal;
+import org.example.reggie.service.CategoryService;
 import org.example.reggie.service.SetmealDishService;
 import org.example.reggie.service.SetmealService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 套餐管理
@@ -26,9 +32,13 @@ public class SetmealController {
     @Autowired
     private SetmealDishService setmealDishService;
 
+    @Autowired
+    private CategoryService categoryService;
+
 
     /**
      * 新增套餐
+     *
      * @param setmealDto 套餐信息
      * @return 新增结果
      */
@@ -44,4 +54,70 @@ public class SetmealController {
         return R.success("新增成功");
     }
 
+
+    /**
+     * 套餐分页查询
+     *
+     * @param page 分页参数
+     * @return 分页结果
+     */
+    @GetMapping("/page")
+    public R<Page<SetmealDto>> page(int page, int pageSize, String name) {
+
+        log.info("分页查询套餐: page = {}, pageSize = {}, name = {}", page, pageSize, name);
+
+        // 分页构造器
+        Page<Setmeal> setmealPage = new Page<>(page, pageSize);
+        Page<SetmealDto> setmealDtoPage = new Page<>();
+
+        // 查询条件构造器
+        LambdaQueryWrapper<Setmeal> setmealLambdaQueryWrapper = new LambdaQueryWrapper<>();
+
+        // 根据套餐名称模糊查询
+        setmealLambdaQueryWrapper.like(name != null, Setmeal::getName, name);
+
+        // 排序
+        setmealLambdaQueryWrapper.orderByDesc(Setmeal::getUpdateTime);
+
+        // 分页查询
+        setmealService.page(setmealPage, setmealLambdaQueryWrapper);
+
+        // 对象拷贝
+        BeanUtils.copyProperties(setmealPage, setmealDtoPage, "records");
+        List<Setmeal> setmealList = setmealPage.getRecords();
+
+        // 遍历套餐列表
+        List<SetmealDto> setmealDtoList = setmealList.stream().map(setmeal -> {
+
+            // 创建套餐DTO对象
+            SetmealDto setmealDto = new SetmealDto();
+            BeanUtils.copyProperties(setmeal, setmealDto);
+
+            // 获取套餐分类ID
+            Long CategoryId = setmeal.getCategoryId();
+
+            // 根据分类ID查询分类
+            Category category = categoryService.getById(CategoryId);
+
+            // 设置分类名称
+            if (category != null) {
+                setmealDto.setCategoryName(category.getName());
+            }
+
+            // 返回
+            return setmealDto;
+
+        }).collect(Collectors.toList());
+
+        // 设置套餐DTO列表
+        setmealDtoPage.setRecords(setmealDtoList);
+
+        // 返回
+        log.info("分页查询成功: {}", setmealDtoPage.getRecords());
+        return R.success(setmealDtoPage);
+
+    }
+
 }
+
+
