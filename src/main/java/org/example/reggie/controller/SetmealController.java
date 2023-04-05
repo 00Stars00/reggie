@@ -4,6 +4,7 @@ package org.example.reggie.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.annotations.Delete;
 import org.example.reggie.common.R;
 import org.example.reggie.dto.SetmealDto;
 import org.example.reggie.entity.Category;
@@ -116,6 +117,24 @@ public class SetmealController {
         log.info("分页查询成功: {}", setmealDtoPage.getRecords());
         return R.success(setmealDtoPage);
 
+    }
+
+
+    /**
+     * 删除套餐
+     * @param ids 套餐ID列表
+     * @return 删除结果
+     */
+    @DeleteMapping
+    public R<String> delete(@RequestParam List<Long> ids) {
+
+        log.info("删除套餐: {}", ids);
+
+        // 删除套餐
+        setmealService.removeWithDish(ids);
+
+        // 返回
+        return R.success("删除成功");
     }
 
 }

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import org.example.reggie.common.CustomException;
 import org.example.reggie.common.R;
 import org.example.reggie.dto.DishDto;
 import org.example.reggie.entity.Dish;
@@ -108,6 +109,17 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
     @Override
     public void removeByIdWithFlavor(List<Long> id) {
 
+        // 菜品正在起售，无法删除
+        List<Dish> dishList = this.listByIds(id);
+
+        // 判断菜品是否正在起售
+        boolean isOneDish = dishList.stream().anyMatch(dish -> dish.getStatus() == 1);
+
+        // 如果菜品正在起售，抛出异常
+        if (isOneDish) {
+            throw new CustomException("菜品正在起售，无法删除");
+        }
+
         // 删除菜品信息
         dishService.removeByIds(id);
 
@@ -134,8 +146,6 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
                 .in(Dish::getId, id));
 
     }
-
-
 
 
 }
