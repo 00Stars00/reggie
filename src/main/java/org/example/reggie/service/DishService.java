@@ -31,12 +31,14 @@ public interface DishService extends IService<Dish> {
      * 根据id删除菜品口味信息
      * @param id 菜品口味id
      */
-    void removeByIdWithFlavor(List<Long> id);
+    public void removeByIdWithFlavor(List<Long> id);
 
     /**
      * 根据id更新菜品状态
      * @param status 菜品状态
      * @param id 菜品id
      */
-    void updateStatus(Integer status, List<Long> id);
+    public void updateStatus(Integer status, List<Long> id);
+
+
 }

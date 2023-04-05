@@ -121,7 +121,7 @@ public class DishController {
     /**
      * 根据id查询菜品信息和口味
      *
-     * @param id    菜品id
+     * @param id 菜品id
      * @return 成功信息
      */
     @GetMapping("/{id}")
@@ -141,6 +141,7 @@ public class DishController {
 
     /**
      * 修改菜品信息
+     *
      * @param dishDto 菜品信息
      * @return 成功信息
      */
@@ -161,46 +162,75 @@ public class DishController {
 
     /**
      * 根据id删除菜品信息和口味信息
+     *
      * @param ids 菜品id
      * @return 成功信息
      */
     @DeleteMapping
     public R<String> delete(@RequestParam List<Long> ids) {
-            
-            log.info("删除菜品信息: id = {}", ids);
-    
-            // 删除菜品信息
-            dishService.removeByIdWithFlavor(ids);
-    
-            // 返回
-            log.info("删除菜品信息成功");
-            return R.success("删除菜品信息成功");
 
-        
+        log.info("删除菜品信息: id = {}", ids);
+
+        // 删除菜品信息
+        dishService.removeByIdWithFlavor(ids);
+
+        // 返回
+        log.info("删除菜品信息成功");
+        return R.success("删除菜品信息成功");
+
 
     }
-
 
 
     /**
      * 修改菜品状态
+     *
      * @param status 状态
-     * @param ids 菜品id
+     * @param ids    菜品id
      * @return 成功信息
      */
     @PostMapping("/status/{status}")
-    public R<String> status(@PathVariable("status") Integer status,  @RequestParam List<Long> ids) {
+    public R<String> status(@PathVariable("status") Integer status, @RequestParam List<Long> ids) {
 
-            log.info("修改菜品状态: status = {}, ids = {}", status, ids);
+        log.info("修改菜品状态: status = {}, ids = {}", status, ids);
 
-            // 修改菜品状态
-            dishService.updateStatus(status, ids);
+        // 修改菜品状态
+        dishService.updateStatus(status, ids);
 
-            // 返回
-            log.info("修改菜品状态成功");
-            return R.success("修改菜品状态成功");
+        // 返回
+        log.info("修改菜品状态成功");
+        return R.success("修改菜品状态成功");
 
     }
 
 
+    /**
+     * 根据条件查询菜品列表
+     *
+     * @param dish 菜品信息
+     * @return 菜品列表
+     */
+    @GetMapping("/list")
+    public R<List<Dish>> list(Dish dish) {
+
+        log.info("查询菜品列表: {}", dish);
+
+        // 查询菜品列表
+        LambdaQueryWrapper<Dish> dishLambdaQueryWrapper = new LambdaQueryWrapper<>();
+
+        // 条件查询
+        dishLambdaQueryWrapper.eq( Dish::getStatus,1);
+        dishLambdaQueryWrapper.eq(dish.getCategoryId() != null, Dish::getCategoryId, dish.getCategoryId());
+
+        // 排序
+        dishLambdaQueryWrapper.orderByAsc(Dish::getSort).orderByDesc(Dish::getUpdateTime);
+
+        // 查询
+        List<Dish> dishList = dishService.list(dishLambdaQueryWrapper);
+
+        // 返回
+        log.info("查询菜品列表成功");
+        return R.success(dishList);
+
+    }
 }

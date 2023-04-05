@@ -127,13 +127,15 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
     @Override
     public void updateStatus(Integer status, List<Long> id) {
 
-            // 根据id更新菜品状态
-            Dish dish = new Dish();
-            dish.setStatus(status);
-            dishService.update(dish, new LambdaQueryWrapper<Dish>()
-                    .in(Dish::getId, id));
+        // 根据id更新菜品状态
+        Dish dish = new Dish();
+        dish.setStatus(status);
+        dishService.update(dish, new LambdaQueryWrapper<Dish>()
+                .in(Dish::getId, id));
 
     }
+
+
 
 
 }
