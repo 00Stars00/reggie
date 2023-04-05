@@ -170,7 +170,7 @@ public class DishController {
             log.info("删除菜品信息: id = {}", ids);
     
             // 删除菜品信息
-            //dishService.removeByIdWithFlavor(ids);
+            dishService.removeByIdWithFlavor(ids);
     
             // 返回
             log.info("删除菜品信息成功");

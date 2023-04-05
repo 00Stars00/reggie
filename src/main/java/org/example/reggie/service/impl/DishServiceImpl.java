@@ -30,6 +30,7 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
 
     /**
      * 添加菜品
+     *
      * @param dishDto 菜品信息
      */
     @Transactional
@@ -50,31 +51,34 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
 
     /**
      * 根据id查询菜品信息和口味信息
+     *
      * @param id 菜品id
      * @return 菜品信息
      */
+    @Transactional
     @Override
     public DishDto getByIdWithFlavor(Long id) {
 
-            // 查询菜品信息
-            Dish dish = this.getById(id);
+        // 查询菜品信息
+        Dish dish = this.getById(id);
 
-            // 转换为dto
-            DishDto dishDto = new DishDto();
-            BeanUtils.copyProperties(dish, dishDto);
+        // 转换为dto
+        DishDto dishDto = new DishDto();
+        BeanUtils.copyProperties(dish, dishDto);
 
-            // 查询菜品口味信息
-            List<DishFlavor> dishFlavors = dishFlavorService.list(new LambdaQueryWrapper<DishFlavor>()
-                    .eq(DishFlavor::getDishId, id));
+        // 查询菜品口味信息
+        List<DishFlavor> dishFlavors = dishFlavorService.list(new LambdaQueryWrapper<DishFlavor>()
+                .eq(DishFlavor::getDishId, id));
 
-            // 设置菜品口味信息
-            dishDto.setFlavors(dishFlavors);
+        // 设置菜品口味信息
+        dishDto.setFlavors(dishFlavors);
 
-            return dishDto;
+        return dishDto;
     }
 
     /**
      * 更新菜品信息和口味信息
+     *
      * @param dishDto 菜品信息
      */
     @Transactional
@@ -97,38 +101,38 @@ public class DishServiceImpl extends ServiceImpl<DishMapper, Dish> implements Di
 
     /**
      * 根据id删除菜品信息和口味信息
+     *
      * @param id 菜品id
      */
     @Transactional
     @Override
-    public void removeByIdWithFlavor(Long id) {
+    public void removeByIdWithFlavor(List<Long> id) {
 
-            // 删除菜品信息
-            this.removeById(id);
+        // 删除菜品信息
+        dishService.removeByIds(id);
 
-            // 删除菜品口味信息
-            dishFlavorService.remove(new LambdaQueryWrapper<DishFlavor>()
-                    .eq(DishFlavor::getDishId, id));
+        // 删除菜品口味信息
+        dishFlavorService.remove(new LambdaQueryWrapper<DishFlavor>()
+                .in(DishFlavor::getDishId, id));
     }
 
 
     /**
      * 根据id更新菜品状态
+     *
      * @param status 菜品状态
-     * @param ids 菜品id
+     * @param id     菜品id
      */
+    @Transactional
     @Override
-    public void updateStatus(Integer status, List<Long> ids) {
+    public void updateStatus(Integer status, List<Long> id) {
 
-            LambdaQueryWrapper<Dish> dishLambdaQueryWrapper = new LambdaQueryWrapper<>();
-            dishLambdaQueryWrapper.in(ids!=null,Dish::getId, ids);
+            // 根据id更新菜品状态
+            Dish dish = new Dish();
+            dish.setStatus(status);
+            dishService.update(dish, new LambdaQueryWrapper<Dish>()
+                    .in(Dish::getId, id));
 
-            List<Dish> dishList = dishService.list(dishLambdaQueryWrapper);
-
-            dishList.forEach(dish -> {
-                dish.setStatus(status);
-                dishService.updateById(dish);
-            });
     }
 
 
