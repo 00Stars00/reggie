@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Delete;
 import org.example.reggie.common.R;
 import org.example.reggie.dto.SetmealDto;
 import org.example.reggie.entity.Category;
+import org.example.reggie.entity.Dish;
 import org.example.reggie.entity.Setmeal;
 import org.example.reggie.service.CategoryService;
 import org.example.reggie.service.SetmealDishService;
@@ -135,6 +136,37 @@ public class SetmealController {
 
         // 返回
         return R.success("删除成功");
+    }
+
+
+    /**
+     * 根据条件查询套餐列表
+     *
+     * @param setmeal 查询条件
+     * @return 套餐列表
+     */
+    @GetMapping("/list")
+    public R<List<Setmeal>> list(Setmeal setmeal) {
+
+        log.info("查询套餐列表: {}", setmeal);
+
+        // 查询条件构造器
+        LambdaQueryWrapper<Setmeal> setmealLambdaQueryWrapper = new LambdaQueryWrapper<>();
+
+        // 根据套餐名称模糊查询
+        setmealLambdaQueryWrapper.eq(Setmeal::getStatus, 1);
+        setmealLambdaQueryWrapper.eq(setmeal.getCategoryId() != null, Setmeal::getCategoryId, setmeal.getCategoryId());
+
+        // 排序
+        setmealLambdaQueryWrapper.orderByDesc(Setmeal::getUpdateTime);
+
+        // 查询
+        List<Setmeal> setmealList = setmealService.list(setmealLambdaQueryWrapper);
+
+        // 返回
+        log.info("查询成功: {}", setmealList);
+        return R.success(setmealList);
+
     }
 
 }

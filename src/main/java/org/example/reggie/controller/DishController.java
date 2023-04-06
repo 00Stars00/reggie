@@ -229,7 +229,7 @@ public class DishController {
         List<Dish> dishList = dishService.list(dishLambdaQueryWrapper);
 
         // 返回
-        log.info("查询菜品列表成功");
+        log.info("查询菜品列表成功: {}", dishList);
         return R.success(dishList);
 
     }
