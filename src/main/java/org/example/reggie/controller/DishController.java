@@ -8,6 +8,7 @@ import org.example.reggie.common.R;
 import org.example.reggie.dto.DishDto;
 import org.example.reggie.entity.Category;
 import org.example.reggie.entity.Dish;
+import org.example.reggie.entity.DishFlavor;
 import org.example.reggie.service.CategoryService;
 import org.example.reggie.service.DishFlavorService;
 import org.example.reggie.service.DishService;
@@ -211,7 +212,7 @@ public class DishController {
      * @return 菜品列表
      */
     @GetMapping("/list")
-    public R<List<Dish>> list(Dish dish) {
+    public R<List<DishDto>> list(Dish dish) {
 
         log.info("查询菜品列表: {}", dish);
 
@@ -219,7 +220,7 @@ public class DishController {
         LambdaQueryWrapper<Dish> dishLambdaQueryWrapper = new LambdaQueryWrapper<>();
 
         // 条件查询
-        dishLambdaQueryWrapper.eq( Dish::getStatus,1);
+        dishLambdaQueryWrapper.eq(Dish::getStatus, 1);
         dishLambdaQueryWrapper.eq(dish.getCategoryId() != null, Dish::getCategoryId, dish.getCategoryId());
 
         // 排序
@@ -228,9 +229,41 @@ public class DishController {
         // 查询
         List<Dish> dishList = dishService.list(dishLambdaQueryWrapper);
 
+        // 转换
+        List<DishDto> dishDtoList = dishList.stream().map((item) -> {
+            DishDto dishDto = new DishDto();
+
+            BeanUtils.copyProperties(item, dishDto);
+
+            Long categoryId = (Long) item.getCategoryId();
+
+            Category category = categoryService.getById(categoryId);
+
+            if (category != null) {
+
+                String categoryName = category.getName();
+                dishDto.setCategoryName(categoryName);
+
+            }
+
+            // 当前菜品的ID
+            Long dishId = item.getId();
+
+            // 查询口味列表
+            LambdaQueryWrapper<DishFlavor> dishFlavorLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            dishFlavorLambdaQueryWrapper.eq(DishFlavor::getDishId, dishId);
+
+            List<DishFlavor> dishFlavorList = dishFlavorService.list(dishFlavorLambdaQueryWrapper);
+
+            dishDto.setFlavors(dishFlavorList);
+
+            return dishDto;
+
+        }).collect(Collectors.toList());
+
         // 返回
-        log.info("查询菜品列表成功: {}", dishList);
-        return R.success(dishList);
+        log.info("查询菜品列表成功: {}", dishDtoList);
+        return R.success(dishDtoList);
 
     }
 }

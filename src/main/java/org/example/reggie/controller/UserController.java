@@ -3,6 +3,7 @@ package org.example.reggie.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.example.reggie.common.CustomException;
 import org.example.reggie.common.R;
 import org.example.reggie.entity.User;
 import org.example.reggie.service.UserService;
@@ -57,7 +58,15 @@ public class UserController {
             message.setTo(phone);
             message.setSubject("瑞吉外卖登录验证码");
             message.setText("您的验证码为: " + code);
-            mailSender.send(message);
+
+            try {
+                mailSender.send(message);
+            } catch (Exception e) {
+                log.error("发送验证码失败: {}", e.getMessage());
+                throw new CustomException("发送验证码失败");
+
+            }
+
 
             // 4. 将验证码存入session
             session.setAttribute("code", code);
@@ -77,7 +86,7 @@ public class UserController {
      * @return 登录结果
      */
     @PostMapping("/login")
-    public R<User> login(@RequestBody Map<String,String> map, HttpSession session) {
+    public R<User> login(@RequestBody Map<String, String> map, HttpSession session) {
 
         log.info("map: {}", map);
 

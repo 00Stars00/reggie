@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ApifoxUploaderProjectSetting">
+    <option name="apifoxAccessToken" value="APS-hoFqrz6Izq8O1PKMmEfoKXJ3cj9LX0Yc" />
+    <option name="apifoxApiOverwriteMode" value="覆盖所有字段" />
+    <option name="apifoxProjectIds">
+      <array>
+        <option value="# ModuleName:ProjectID" />
+        <option value="reggie_take_out:2535800" />
+      </array>
+    </option>
+    <option name="yapiTokens" value="" />
+  </component>
+</project>

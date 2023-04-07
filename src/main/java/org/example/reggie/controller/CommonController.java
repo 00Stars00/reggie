@@ -36,8 +36,6 @@ public class CommonController {
     @PostMapping("/upload")
     public R<String> upload(MultipartFile file){
 
-        log.info("上传文件:{}", file.getOriginalFilename());
-
         // 获取文件后缀
         String suffix = Objects.requireNonNull(file.getOriginalFilename()).substring(file.getOriginalFilename().lastIndexOf("."));
 
@@ -70,8 +68,6 @@ public class CommonController {
      */
     @GetMapping("/download")
     public void download(String name, HttpServletResponse response){
-
-        log.info("下载文件:{}", name);
 
         try {
 

@@ -4,11 +4,9 @@ package org.example.reggie.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.ibatis.annotations.Delete;
 import org.example.reggie.common.R;
 import org.example.reggie.dto.SetmealDto;
 import org.example.reggie.entity.Category;
-import org.example.reggie.entity.Dish;
 import org.example.reggie.entity.Setmeal;
 import org.example.reggie.service.CategoryService;
 import org.example.reggie.service.SetmealDishService;
@@ -123,6 +121,7 @@ public class SetmealController {
 
     /**
      * 删除套餐
+     *
      * @param ids 套餐ID列表
      * @return 删除结果
      */
@@ -154,8 +153,8 @@ public class SetmealController {
         LambdaQueryWrapper<Setmeal> setmealLambdaQueryWrapper = new LambdaQueryWrapper<>();
 
         // 根据套餐名称模糊查询
-        setmealLambdaQueryWrapper.eq(Setmeal::getStatus, 1);
         setmealLambdaQueryWrapper.eq(setmeal.getCategoryId() != null, Setmeal::getCategoryId, setmeal.getCategoryId());
+        setmealLambdaQueryWrapper.eq(setmeal.getStatus()!=null,Setmeal::getStatus, setmeal.getStatus());
 
         // 排序
         setmealLambdaQueryWrapper.orderByDesc(Setmeal::getUpdateTime);

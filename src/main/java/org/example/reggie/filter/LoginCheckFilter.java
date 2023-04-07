@@ -6,12 +6,14 @@ import org.example.reggie.common.BaseContext;
 import org.example.reggie.common.R;
 import org.example.reggie.entity.Employee;
 import org.example.reggie.entity.User;
+import org.example.reggie.utils.IpUtil;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 
 /**
  * 登录检查过滤器
@@ -23,6 +25,19 @@ public class LoginCheckFilter implements Filter {
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
+
+        log.info("=================================");
+        log.info("*********************************");
+        log.info("*             新请求             *");
+        log.info("* 请求时间：\t{}  *", new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(System.currentTimeMillis()));
+        log.info("* 请求者IP：\t{}\t *", IpUtil.getIpAddr(request));
+        log.info("* 请求者端口：\t{}\t\t\t *", request.getRemotePort());
+        log.info("*********************************");
+
+
+
+
+
 
         // 获取请求路径
         String requestURI = request.getRequestURI();
