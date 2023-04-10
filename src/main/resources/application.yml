@@ -10,6 +10,12 @@ spring:
       url: jdbc:mysql://localhost:3306/reggie?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
       username: root
       password: 1234
+  redis:
+    host: localhost
+    port: 6379
+    #user:
+    #password:
+    database: 0
   mail:
     #smtp服务主机  163邮箱则为smtp.163.com
     host: smtp.163.com
