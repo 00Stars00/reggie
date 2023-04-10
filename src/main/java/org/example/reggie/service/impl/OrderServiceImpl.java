@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.example.reggie.common.BaseContext;
 import org.example.reggie.common.CustomException;
-import org.example.reggie.common.R;
 import org.example.reggie.entity.*;
 import org.example.reggie.mapper.OrderMapper;
 import org.example.reggie.service.*;
