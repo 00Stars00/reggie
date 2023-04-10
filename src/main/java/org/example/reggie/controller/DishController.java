@@ -14,9 +14,11 @@ import org.example.reggie.service.DishFlavorService;
 import org.example.reggie.service.DishService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -35,6 +37,9 @@ public class DishController {
 
     @Autowired
     private CategoryService categoryService;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
 
     /**
@@ -154,6 +159,10 @@ public class DishController {
         // 修改菜品信息
         dishService.updateWithFlavor(dishDto);
 
+        // 清除redis缓存
+        String key = "dish_" + dishDto.getCategoryId()+"_1";
+        redisTemplate.delete(key);
+
         // 返回
         log.info("修改菜品信息成功");
         return R.success("修改菜品信息成功");
@@ -216,6 +225,19 @@ public class DishController {
 
         log.info("查询菜品列表: {}", dish);
 
+        // 定义菜品列表
+        List<DishDto> dishDtoList = null;
+
+        // 从redis中获取菜品列表
+        dishDtoList = (List<DishDto>) redisTemplate.opsForValue().get("dish_" + dish.getCategoryId() + "_" + dish.getStatus());
+
+        // 如果redis中有菜品列表, 则直接返回
+        if (dishDtoList != null) {
+            log.info("从redis中获取菜品列表成功");
+            return R.success(dishDtoList);
+        }
+
+        // 如果redis中没有菜品列表, 则从数据库中查询
         // 查询菜品列表
         LambdaQueryWrapper<Dish> dishLambdaQueryWrapper = new LambdaQueryWrapper<>();
 
@@ -230,7 +252,7 @@ public class DishController {
         List<Dish> dishList = dishService.list(dishLambdaQueryWrapper);
 
         // 转换
-        List<DishDto> dishDtoList = dishList.stream().map((item) -> {
+        dishDtoList = dishList.stream().map((item) -> {
             DishDto dishDto = new DishDto();
 
             BeanUtils.copyProperties(item, dishDto);
@@ -260,6 +282,9 @@ public class DishController {
             return dishDto;
 
         }).collect(Collectors.toList());
+
+        // 将菜品列表存入redis
+        redisTemplate.opsForValue().set("dish_" + dish.getCategoryId() + "_" + dish.getStatus(), dishDtoList, 60, TimeUnit.MINUTES);
 
         // 返回
         log.info("查询菜品列表成功: {}", dishDtoList);
