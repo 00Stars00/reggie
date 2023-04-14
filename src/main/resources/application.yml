@@ -16,6 +16,9 @@ spring:
     #user:
     #password:
     database: 0
+  cache:
+    redis:
+      time-to-live: 1800000     # 缓存过期时间，单位为秒
   mail:
     #smtp服务主机  163邮箱则为smtp.163.com
     host: smtp.163.com
