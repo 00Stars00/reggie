@@ -26,22 +26,21 @@ public class LoginCheckFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
-        log.info("=================================");
-        log.info("*********************************");
-        log.info("*             新请求             *");
-        log.info("* 请求时间：\t{}  *", new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(System.currentTimeMillis()));
-        log.info("* 请求者IP：\t{}\t *", IpUtil.getIpAddr(request));
-        log.info("* 请求者端口：\t{}\t\t\t *", request.getRemotePort());
-        log.info("*********************************");
-
-
-
-
-
-
         // 获取请求路径
         String requestURI = request.getRequestURI();
-        log.info("请求路径：{}", requestURI);
+        if (!requestURI.contains("/backend/") && !requestURI.contains("/front/") && !requestURI.contains(".html")) {
+
+            log.info("=================================");
+            log.info("*********************************");
+            log.info("*             新请求             *");
+            log.info("* 请求时间：\t{}  *", new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(System.currentTimeMillis()));
+            log.info("* 请求者IP：\t{}\t *", IpUtil.getIpAddr(request));
+            log.info("* 请求者端口：\t{}\t\t\t *", request.getRemotePort());
+            log.info("*********************************");
+
+            log.info("请求路径：{}", requestURI);
+        }
+
 
         // 判断是否是登录请求
         if (requestURI.contains("/employee/login") || requestURI.contains("/user/login")) {
@@ -61,11 +60,10 @@ public class LoginCheckFilter implements Filter {
         // 判断是否是静态资源
         if (requestURI.contains("/backend/") || requestURI.contains("/front/") || requestURI.contains(".html")) {
             // 放行
-            log.info("静态资源，放行");
+            // log.info("静态资源，放行");
             filterChain.doFilter(request, response);
             return;
         }
-
 
 
         // 判断是否登录
