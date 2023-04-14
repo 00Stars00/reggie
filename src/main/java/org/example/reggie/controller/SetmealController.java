@@ -13,6 +13,8 @@ import org.example.reggie.service.SetmealDishService;
 import org.example.reggie.service.SetmealService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -43,6 +45,7 @@ public class SetmealController {
      * @return 新增结果
      */
     @PostMapping
+    @CacheEvict(value = "setmealList", allEntries = true)
     public R<String> save(@RequestBody SetmealDto setmealDto) {
 
         log.info("新增套餐: {}", setmealDto);
@@ -126,6 +129,7 @@ public class SetmealController {
      * @return 删除结果
      */
     @DeleteMapping
+    @CacheEvict(value = "setmealList", allEntries = true)
     public R<String> delete(@RequestParam List<Long> ids) {
 
         log.info("删除套餐: {}", ids);
@@ -144,6 +148,7 @@ public class SetmealController {
      * @param setmeal 查询条件
      * @return 套餐列表
      */
+    @Cacheable(value = "setmealList", key = "#setmeal.categoryId + '_' + #setmeal.status")
     @GetMapping("/list")
     public R<List<Setmeal>> list(Setmeal setmeal) {
 
